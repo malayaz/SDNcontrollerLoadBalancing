@@ -1,0 +1,66 @@
+Requirements
+
+	Switches should run CentOS as openflow 1.3 support in the kernel of CentOS.
+	Controller and SuperController nodes to run Ubuntu 14.04.
+	Topology Diagram  tested on attached in PPT.
+	ryu-manager installed on the controller node.
+
+	How to install ryu-manager on controller?
+		
+		Using pip command is the easiest option:
+			If any of the package is not installed, install it via pip. If pip is absent, install it via apt-get install pip.
+			Then install pip install ryu
+
+		If you prefer to install from the source code:
+			% git clone git://github.com/osrg/ryu.git 
+			% cd ryu; python ./setup.py install 
+	 
+	How to install openVswitch on Centos?
+	
+		Follow the guidelines given on this link:
+			http://supercomputing.caltech.edu/blog/index.php/2016/05/03/open-vswitch-installation-on-centos-7-2/
+
+	The following python packages must be installed on the controller node and SuperController node - 
+
+	thread
+	threading
+	time
+
+
+
+Files to be placed on SuperController
+
+	supercontroller_average_calculation.py		# Code runs Algorithm to divide the flow requests among the controller (i.e. does load balancing) and sends updated role to controllers.
+	supercontroller_collection_accumulation.py 	# Code to accumulate the flow requests from each controller for switches attached every 10 seconds 
+
+	How to Run
+	
+	python supercontroller_average_calculation.py
+	python supercontroller_collection_accumulation.py
+
+Files to be placed on Controller
+
+	Controller.py    # Main code for the controller -- event handling for packet in, Sending MASTER/SLAVE/EQUAL role to switch,
+			 sending switches flow matrix to supercontroller and receiving role from SuperController.
+
+	How To Run
+	ryu-manager Controller.py --verbose
+
+Other Files and their USE
+
+setup_switch.sh 	# Script file to setup all the switches with correct openVswitch version on CentOS
+
+setup_controller.sh	# Script file to setup all the controllers, ssh to all the controllers and installs ryu
+
+Initial_role_config.sh   # to set the initial roles of the controller for the switches , can be run from any system , controller.py should be running
+
+check_role.sh		# at each switch , to check the role at the switch for the controller MASTER/SLAVE/EQUAL/other
+
+arping.sh 		# Script file at hosts to send dynamic requests
+
+
+
+
+References
+http://ryu.readthedocs.io/en/latest/api_ref.html
+https://github.com/osrg/ryu/blob/master/ryu/app/simple_switch.py ( Sample Code for packet in RYU Documentation Guide )
